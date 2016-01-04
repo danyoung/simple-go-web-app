@@ -5,10 +5,11 @@ set -e
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export ATC_URL=${ATC_URL:-"http://192.168.100.4:8080"}
-export fly_target=${fly_target:-tutorial}
+export fly_target=${fly_target:-local}
+export pipeline="simple-go-web-app"
 echo "Concourse API target ${fly_target}"
 echo "Concourse API $ATC_URL"
-echo "Tutorial $(basename $DIR)"
+echo "Concourse Pipeline: $pipeline"
 
 realpath() {
     [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
@@ -25,7 +26,7 @@ if [[ ! -f ${stub} ]]; then
 fi
 
 pushd $DIR
-  yes y | fly -t ${fly_target} configure -c pipeline.yml --vars-from ${stub}
-  curl $ATC_URL/pipelines/main/jobs/job-deploy/builds -X POST
-  fly -t ${fly_target} watch -j job-deploy
+  yes y | fly -t ${fly_target} set-pipeline -c pipeline.yml -p ${pipeline} --load-vars-from ${stub}
+#  curl $ATC_URL/pipelines/$pipeline/jobs/deploy-app/builds -X POST
+#  fly -t ${fly_target} watch -j deploy-app
 popd
