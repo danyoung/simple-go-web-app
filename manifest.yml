@@ -1,5 +1,5 @@
 ---
 applications:
 - name: simple-go-web-app
-  disk: 256M
-  memory: 128M
+  disk: 128M
+  memory: 64M
