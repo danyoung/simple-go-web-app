@@ -27,7 +27,7 @@ jobs:
         params:
           manifest: simple-app/manifest.yml
           path: simple-app
-      - put: deploy-cf-appfog
+      - put: deploy-cf-pws
         params:
           manifest: simple-app/manifest.yml
           path: simple-app
@@ -41,21 +41,21 @@ resources:
 - name: deploy-cf-local
   type: cf
   source:
-    api: {{cf-api}}
-    username: {{cf-username}}
-    password: {{cf-password}}
-    organization: {{cf-organization}}
-    space: {{cf-space}}
+    api: {{cf0-api}}
+    username: {{cf0-username}}
+    password: {{cf0-password}}
+    organization: {{cf0-organization}}
+    space: {{cf0-space}}
     skip_cert_check: true
 
-- name: deploy-cf-appfog
+- name: deploy-cf-pws
   type: cf
   source:
-    api: {{af-api}}
-    username: {{af-username}}
-    password: {{af-password}}
-    organization: {{af-organization}}
-    space: {{af-space}}
+    api: {{cf1-api}}
+    username: {{cf1-username}}
+    password: {{cf1-password}}
+    organization: {{cf1-organization}}
+    space: {{cf1-space}}
     skip_cert_check: false
 
 groups:
