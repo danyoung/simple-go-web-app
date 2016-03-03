@@ -1,0 +1,57 @@
+---
+jobs:
+- name: unit-test-1
+  public: true
+  serial: true
+  plan:
+  - get: simple-app
+    trigger: true
+  - task: golang-test-simple-app
+    config:
+      platform: linux
+      image: docker:///golang#1.4.1
+      inputs:
+        - name: simple-app
+      run:
+        path: ./simple-app/test
+
+- name: deploy-app
+  public: true
+  serial: true
+  plan:
+    - get: simple-app
+      passed: [unit-test-1]
+      trigger: true
+    - aggregate:
+      - put: deploy-cf-local
+        params:
+          manifest: simple-app/manifest.yml
+          path: simple-app
+
+resources:
+- name: simple-app
+  type: git
+  source:
+    uri: https://github.com/danyoung/simple-go-web-app.git
+
+- name: deploy-cf-local
+  type: cf
+  source:
+    api: {{cf0-api}}
+    username: {{cf0-username}}
+    password: {{cf0-password}}
+    organization: {{cf0-organization}}
+    space: {{cf0-space}}
+    skip_cert_check: true
+
+groups:
+- name: pipeline
+  jobs:
+  - unit-test-1
+  - deploy-app
+- name: tests
+  jobs:
+  - unit-test-1
+- name: deploy
+  jobs:
+  - deploy-app
